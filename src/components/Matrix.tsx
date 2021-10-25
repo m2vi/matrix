@@ -1,34 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { chars } from './data';
 
 export default class Matrix extends React.Component<any, any> {
-  static propTypes = {
-    width: PropTypes.number,
-    height: PropTypes.number,
-    fullscreen: PropTypes.bool,
-    colSize: PropTypes.number,
-    fontSize: PropTypes.number,
-    interval: PropTypes.number,
-    color: PropTypes.string,
-    frequency: PropTypes.number,
-    speed: PropTypes.number,
-    style: PropTypes.object,
-    zIndex: PropTypes.number,
-  };
-
-  static defaultProps = {
-    width: 640,
-    height: 480,
-    fullscreen: true,
-    colSize: 11,
-    fontSize: 13.5,
-    interval: 30,
-    color: '#009a22',
-    frequency: 0.005,
-    speed: 1.6,
-  };
-
   constructor(props: any) {
     super(props as any);
 
@@ -44,8 +17,8 @@ export default class Matrix extends React.Component<any, any> {
     this.setState({ canvas: this.refs.canvas }, () => {
       let columns = [] as any[];
       let context = this.state.canvas.getContext('2d');
-      let size = this.props.colSize;
-      let source = chars;
+      let size = 11;
+      let source = chars();
       let width = window.innerWidth;
       let height = window.innerHeight;
       let canvas = this.state.canvas;
@@ -60,10 +33,10 @@ export default class Matrix extends React.Component<any, any> {
         }
 
         this.draw();
-        let interval = setInterval(this.draw, 50 / this.props.speed);
+        let interval = setInterval(this.draw, 50 / 1.6);
         this.setState({ interval });
 
-        if (this.props.fullscreen) window.addEventListener('resize', this.updateDimensions);
+        window.addEventListener('resize', this.updateDimensions);
         this.updateDimensions();
       });
     });
@@ -76,8 +49,8 @@ export default class Matrix extends React.Component<any, any> {
 
     context.fillStyle = 'rgba(0,0,0,0.05)';
     context.fillRect(0, 0, this.state.canvas.width, this.state.canvas.height);
-    context.fillStyle = this.props.color;
-    context.font = '400 ' + this.props.fontSize + 'px Matrix';
+    context.fillStyle = '#009a22';
+    context.font = '400 16px Matrix';
 
     for (let columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
       let index = Math.floor(Math.random() * this.state.source.length);
@@ -86,7 +59,7 @@ export default class Matrix extends React.Component<any, any> {
       let positionY = columns[columnIndex] * this.state.size;
 
       context.fillText(character, positionX, positionY);
-      if (positionY >= this.state.canvas.height && Math.random() > 1 - this.props.frequency) {
+      if (positionY >= this.state.canvas.height && Math.random() > 1 - 0.0075) {
         columns[columnIndex] = 0;
       }
       columns[columnIndex]++;
@@ -102,15 +75,13 @@ export default class Matrix extends React.Component<any, any> {
   }
 
   render() {
-    let style = this.props.style ? this.props.style : {};
     return (
       <div
         style={{
-          ...style,
-          width: this.props.fullscreen ? '100vw' : this.props.width + 'px',
-          height: this.props.fullscreen ? '100vh' : this.props.height + 'px',
+          width: '100vw',
+          height: '100vh',
           overflow: 'hidden',
-          zIndex: this.props.zIndex,
+          zIndex: 50,
         }}
       >
         <canvas ref='canvas' />

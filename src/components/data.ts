@@ -1,76 +1,25 @@
-export const chars = [
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j',
-  'k',
-  'l',
-  'm',
-  'n',
-  'o',
-  'p',
-  'q',
-  'r',
-  's',
-  't',
-  'u',
-  'v',
-  'w',
-  'x',
-  'y',
-  'z',
-  '0',
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '0',
-  '~',
-  '!',
-  '#',
-  '$',
-  '%',
-  '^',
-  '&',
-  '*',
-  '(',
-  ')',
-  '_',
-  '+',
-  '{',
-  '}',
-  ':',
-  ';',
-  '"',
-  '<',
-  '>',
-  '?',
-  ',',
-  '.',
-  '/',
-  '[',
-  ']',
-  '\\',
-  "'",
-];
+export const chars = () => {
+  const gen = (charA: string, charZ: string) => {
+    var a = [],
+      i = charA.charCodeAt(0),
+      j = charZ.charCodeAt(0);
+    for (; i <= j; ++i) {
+      a.push(String.fromCharCode(i));
+    }
+    return a;
+  };
+
+  const uppercase = gen('A', 'Z');
+  const lowercase = gen('a', 'z');
+  const numbers = Array.from(Array(10).keys()).map((n: number) => n.toString());
+
+  return [...uppercase, ...lowercase, ...numbers];
+};
 
 export const messages = [
   'Matrix has you',
   'Appearances can be deceiving',
   'Follow the white rabbit',
-  'Everything that has a beginning, has an end',
   'There is no spoon',
-  'Fate, it seems, is not without a sense of irony',
   'Choice. The problem is choice.',
 ];
