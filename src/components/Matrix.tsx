@@ -1,0 +1,122 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { chars } from './data';
+
+export default class Matrix extends React.Component<any, any> {
+  static propTypes = {
+    width: PropTypes.number,
+    height: PropTypes.number,
+    fullscreen: PropTypes.bool,
+    colSize: PropTypes.number,
+    fontSize: PropTypes.number,
+    interval: PropTypes.number,
+    color: PropTypes.string,
+    frequency: PropTypes.number,
+    speed: PropTypes.number,
+    style: PropTypes.object,
+    zIndex: PropTypes.number,
+  };
+
+  static defaultProps = {
+    width: 640,
+    height: 480,
+    fullscreen: true,
+    colSize: 11,
+    fontSize: 13.5,
+    interval: 30,
+    color: '#009a22',
+    frequency: 0.005,
+    speed: 1.6,
+  };
+
+  constructor(props: any) {
+    super(props as any);
+
+    this.state = {
+      canvas: null,
+    };
+
+    this.draw = this.draw.bind(this);
+    this.updateDimensions = this.updateDimensions.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ canvas: this.refs.canvas }, () => {
+      let columns = [] as any[];
+      let context = this.state.canvas.getContext('2d');
+      let size = this.props.colSize;
+      let source = chars;
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let canvas = this.state.canvas;
+      canvas.width = width;
+      canvas.height = height;
+
+      let numberOfColumns = Math.floor((width / size) * 3);
+
+      this.setState({ canvas, columns, context, size, source, numberOfColumns }, () => {
+        for (let i = 0; i < numberOfColumns; i++) {
+          columns.push(0);
+        }
+
+        this.draw();
+        let interval = setInterval(this.draw, 50 / this.props.speed);
+        this.setState({ interval });
+
+        if (this.props.fullscreen) window.addEventListener('resize', this.updateDimensions);
+        this.updateDimensions();
+      });
+    });
+  }
+
+  draw() {
+    let context = this.state.context;
+    let columns = this.state.columns;
+    let numberOfColumns = this.state.numberOfColumns;
+
+    context.fillStyle = 'rgba(0,0,0,0.05)';
+    context.fillRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+    context.fillStyle = this.props.color;
+    context.font = '700 ' + this.props.fontSize + 'px Matrix';
+
+    for (let columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
+      let index = Math.floor(Math.random() * this.state.source.length);
+      let character = this.state.source[index];
+      let positionX = columnIndex * this.state.size;
+      let positionY = columns[columnIndex] * this.state.size;
+
+      context.fillText(character, positionX, positionY);
+      if (positionY >= this.state.canvas.height && Math.random() > 1 - this.props.frequency) {
+        columns[columnIndex] = 0;
+      }
+      columns[columnIndex]++;
+    }
+
+    this.setState({ context, columns });
+  }
+
+  updateDimensions() {
+    let canvas = this.state.canvas;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  render() {
+    let style = this.props.style ? this.props.style : {};
+    return (
+      <div
+        style={{
+          ...style,
+          width: this.props.fullscreen ? '100vw' : this.props.width + 'px',
+          height: this.props.fullscreen ? '100vh' : this.props.height + 'px',
+          overflow: 'hidden',
+          zIndex: this.props.zIndex,
+        }}
+      >
+        <canvas ref='canvas' />
+      </div>
+    );
+  }
+}
+
+// stolen
